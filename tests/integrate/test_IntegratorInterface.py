@@ -13,3 +13,5 @@ class ParabolicTestIntegrand(IntegrandInterface):
     @staticmethod
     def analytical() -> float:
         return 4**3 / 3
+
+

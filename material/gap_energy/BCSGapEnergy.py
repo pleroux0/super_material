@@ -1,4 +1,3 @@
-from typing import Optional
 from math import tanh, sinh, sqrt
 
 import scipy.integrate as integrate
