@@ -1,6 +1,7 @@
 from .LinearIntegrandIntervalTransform import LinearIntegrandIntervalTransform
 from .IntegrandInterval import IntegrandInterval
 
+
 class LinearGuassQuadratureIntervalTransform(LinearIntegrandIntervalTransform):
     _base: IntegrandInterval
 

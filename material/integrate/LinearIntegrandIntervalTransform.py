@@ -1,5 +1,6 @@
 from .IntegrandIntervalTransformInterface import IntegrandIntervalTransformInterface
 
+
 class LinearIntegrandIntervalTransform(IntegrandIntervalTransformInterface):
     _m: float
     _c: float

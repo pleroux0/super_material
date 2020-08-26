@@ -1,2 +1,2 @@
-from .BCSGapEnergy import *
-from .GapEnergyInterface import *
+from .BCSGapEnergy import BCSGapEnergy
+from .GapEnergyInterface import GapEnergyInterface

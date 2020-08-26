@@ -1,5 +1,6 @@
 from math import isfinite, isnan
 
+
 class IntegrandBoundary:
     _value: float
     _defined_on_boundary: bool

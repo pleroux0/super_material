@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 
 from .IntegrandInterval import IntegrandInterval
 
+
 class IntegrandInterface(ABC):
     @abstractmethod
     def evaluate(self, x: float) -> float:

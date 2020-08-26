@@ -1,4 +1,3 @@
-
 # Tolerances
 from .AbsoluteTolerance import *
 from .ConjunctionTolerance import *

@@ -98,4 +98,4 @@ class BCSGapEnergy(GapEnergyInterface):
         return self.gap_energy_0() * sinh(self.eta()) / (2 * self.kappa() * k_B)
 
 
-__all__ = ["BCSGapEnergy", "BCSEtaIntegrand"]
+__all__ = ["BCSGapEnergy"]

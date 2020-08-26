@@ -1,5 +1,6 @@
 from .IntegrandBoundary import IntegrandBoundary
 
+
 class IntegrandInterval:
     _start: IntegrandBoundary
     _end: IntegrandBoundary

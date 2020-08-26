@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 
 from typing import List
 
+
 class FixedQuadratureInterface(ABC):
     @abstractmethod
     def weights(self) -> List[float]:
@@ -14,6 +15,3 @@ class FixedQuadratureInterface(ABC):
     @abstractmethod
     def num_quadrature_points(self) -> int:
         """ The number of quadrature points in the fixed quadrature """
-
-
-

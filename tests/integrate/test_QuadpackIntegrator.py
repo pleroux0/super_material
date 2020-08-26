@@ -4,6 +4,7 @@ from material.integrate import QuadpackIntegrator
 
 from .test_IntegratorInterface import ParabolicTestIntegrand
 
+
 def test_quadpack_integrator():
     integrator = QuadpackIntegrator()
 
