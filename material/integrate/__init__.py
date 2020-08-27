@@ -19,3 +19,4 @@ from .QuadpackIntegrator import *
 from .GuassQuadratureIntervalTransform import *
 from .IntegrandIntervalTransformInterface import *
 from .LinearIntegrandIntervalTransform import *
+from .ChebyshevQuadratureTransform import *

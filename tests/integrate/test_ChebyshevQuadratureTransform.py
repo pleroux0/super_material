@@ -1,15 +1,18 @@
 from math import isclose, atanh, atan, sqrt, pi
 
-from material.conductivity.MattisBardeenComplexConductivity import *
+from material.integrate.ChebyshevQuadratureTransform import *
 
 
 from material.integrate import (
     QuadpackIntegrator,
     TransformedIntegrand,
+    IntegrandInterface,
+    IntegrandBoundary,
+    IntegrandInterval,
 )
 
 
-class MattisBardeenLowerSingularityTestIntegrand(IntegrandInterface):
+class ChebyshevLowerSingularityTestIntegrand(IntegrandInterface):
     # \int_{a}^{b} \frac{1}{\sqrt{x^2-a^2}}
     _a: float
     _b: float
@@ -32,7 +35,7 @@ class MattisBardeenLowerSingularityTestIntegrand(IntegrandInterface):
         return 2 * atanh(sqrt((self._b - self._a) / (self._a + self._b)))
 
 
-class MattisBardeenUpperSingularityTestIntegrand(IntegrandInterface):
+class ChebyshevUpperSingularityTestIntegrand(IntegrandInterface):
     # \int_{a}^{b} \frac{1}{\sqrt{b^2-x**2}}
     _a: float
     _b: float
@@ -55,7 +58,7 @@ class MattisBardeenUpperSingularityTestIntegrand(IntegrandInterface):
         return 2 * atan(sqrt((self._b - self._a) / (self._a + self._b)))
 
 
-class MattisBardeenUpperAndLowerSingularityTestIntegrand(IntegrandInterface):
+class ChebyshevSingularityTestIntegrand(IntegrandInterface):
     # \int_{a}^{B} \frac{1}{\sqrt{1- x^2}}
 
     def evaluate(self, x: float) -> float:
@@ -71,15 +74,15 @@ class MattisBardeenUpperAndLowerSingularityTestIntegrand(IntegrandInterface):
         return pi
 
 
-def test_mattis_bardeen_remove_lower_singularity_transform():
+def test_chebyshev_lower_singularity_transform():
     a = 1
     b = 2
 
     integrator = QuadpackIntegrator()
-    transform = MattisBardeenRemoveLowerSingularityTransform(a)
+    transform = ChebyshevLowerSingularityTransform(a)
 
     # Integratable singularity
-    lower_singular_test = MattisBardeenLowerSingularityTestIntegrand(a, b)
+    lower_singular_test = ChebyshevLowerSingularityTestIntegrand(a, b)
     transformed_test = TransformedIntegrand(lower_singular_test, transform)
 
     # Interval
@@ -100,10 +103,10 @@ def test_mattis_bardeen_remove_upper_singularity_transform():
     b = 2
 
     integrator = QuadpackIntegrator()
-    transform = MattisBardeenRemoveUpperSingularityTransform(b)
+    transform = ChebyshevUpperSingularityTransform(b)
 
     # Integratable singularity
-    upper_singular_test = MattisBardeenUpperSingularityTestIntegrand(a, b)
+    upper_singular_test = ChebyshevUpperSingularityTestIntegrand(a, b)
     transformed_test = TransformedIntegrand(upper_singular_test, transform)
 
     # Interval
@@ -128,14 +131,12 @@ def test_mattis_bardeen_remove_upper_and_lower_singularity_transform():
         absolute_tolerance=absolute_tolerance,
         limit=10,
     )
-    lower_transform = MattisBardeenRemoveLowerSingularityTransform(-1)
-    upper_transform = MattisBardeenRemoveUpperSingularityTransform(sqrt(2))
+    transform = ChebyshevSingularityTransform(-1, 1)
 
-    integrand_test = MattisBardeenUpperAndLowerSingularityTestIntegrand()
-    first_transformed = TransformedIntegrand(integrand_test, lower_transform)
-    second_transformed = TransformedIntegrand(first_transformed, upper_transform)
+    integrand_test = ChebyshevSingularityTestIntegrand()
+    transformed_test = TransformedIntegrand(integrand_test, transform)
 
-    result = integrator.integrate(second_transformed)
+    result = integrator.integrate(transformed_test)
     assert isclose(
         result,
         integrand_test.analytical(),

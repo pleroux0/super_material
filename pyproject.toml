@@ -16,6 +16,7 @@ pylint = "^2.5.3"
 black = "^19.10b0"
 rope = "^0.17.0"
 matplotlib = "^3.3.1"
+sympy = "^1.6.2"
 
 [build-system]
 requires = ["poetry>=0.12"]

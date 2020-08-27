@@ -1,4 +1,4 @@
-from math import sqrt, exp, pi, inf
+from math import sqrt, exp, pi, inf, sin
 
 from .SuperconductorConductivityInterface import SuperconductorConductivityInterface
 
@@ -7,15 +7,16 @@ from ..integrate import (
     IntegrandBoundary,
     IntegrandInterface,
     IntegrandInterval,
-    IntegrandIntervalTransformInterface,
     QuadpackIntegrator,
     TransformedIntegrand,
+    ChebyshevLowerSingularityTransform,
+    ChebyshevUpperSingularityTransform,
 )
 
 from ..constants import h_bar, k_B
 
 
-def f(E, T):
+def fermi_dirac_function(E, T):
     exponent = E / (k_B * T)
 
     if exponent > 500:
@@ -25,48 +26,16 @@ def f(E, T):
     return 1 / denumerator
 
 
-class MattisBardeenRemoveLowerSingularityTransform(IntegrandIntervalTransformInterface):
-    _singularity: float
-
-    def __init__(self, singularity: float):
-        self._singularity = singularity
-
-    def transform(self, x: float) -> float:
-        return sqrt(x - self._singularity)
-
-    def inverse_transform(self, u: float) -> float:
-        return self._singularity + u ** 2
-
-    def transform_derivative(self, x: float) -> float:
-        return 0.5 / sqrt(x - self._singularity)
-
-
-class MattisBardeenRemoveUpperSingularityTransform(IntegrandIntervalTransformInterface):
-    _singularity: float
-
-    def __init__(self, singularity: float):
-        self._singularity = singularity
-
-    def transform(self, x: float) -> float:
-        return sqrt(self._singularity - x)
-
-    def inverse_transform(self, u: float) -> float:
-        return self._singularity - u ** 2
-
-    def transform_derivative(self, x: float) -> float:
-        return -0.5 / sqrt(self._singularity - x)
-
-
 def remove_lower_singularity(integrand: IntegrandInterface):
     lower_singularity = integrand.interval().start().value()
-    transform = MattisBardeenRemoveLowerSingularityTransform(lower_singularity)
+    transform = ChebyshevLowerSingularityTransform(lower_singularity)
     transformed_integrand = TransformedIntegrand(integrand, transform)
     return transformed_integrand
 
 
 def remove_upper_singularity(integrand: IntegrandInterface):
     upper_singularity = integrand.interval().end().value()
-    transform = MattisBardeenRemoveUpperSingularityTransform(upper_singularity)
+    transform = ChebyshevUpperSingularityTransform(upper_singularity)
     transformed_integrand = TransformedIntegrand(integrand, transform)
     return transformed_integrand
 
@@ -88,7 +57,9 @@ class MattisBardeenRealFirstIntegrand(IntegrandInterface):
         return interval
 
     def evaluate(self, E: float) -> float:
-        a = f(E, self._temperature) - f(E + h_bar * self._omega, self._temperature)
+        a = fermi_dirac_function(E, self._temperature) - fermi_dirac_function(
+            E + h_bar * self._omega, self._temperature
+        )
         b = E ** 2 + self._gap_energy ** 2 + h_bar * self._omega * E
         c = sqrt(E ** 2 - self._gap_energy ** 2)
         d = sqrt((E + h_bar * self._omega) ** 2 - self._gap_energy ** 2)
@@ -109,16 +80,22 @@ class MattisBardeenRealSecondIntegrand(IntegrandInterface):
         self._omega = omega
 
     def interval(self) -> IntegrandInterval:
-        lower = IntegrandBoundary(self._gap_energy - h_bar * self._omega, False)
-        upper = IntegrandBoundary(-self._gap_energy, False)
+        lower = IntegrandBoundary(0, True)
+        upper = IntegrandBoundary(pi, True)
         interval = IntegrandInterval(lower, upper)
         return interval
 
-    def evaluate(self, E: float) -> float:
-        a = 1 - 2 * f(E + h_bar * self._omega, self._temperature)
+    def evaluate(self, x: float) -> float:
+        assert 0 <= x <= pi
+
+        lower = self._gap_energy - h_bar * self._omega
+        upper = -self._gap_energy
+        E = lower + (upper - lower) * (sin(x / 2) ** 2)
+
+        a = 1 - 2 * fermi_dirac_function(E + h_bar * self._omega, self._temperature)
         b = E ** 2 + self._gap_energy ** 2 + h_bar * self._omega * E
-        c = sqrt(E ** 2 - self._gap_energy ** 2)
-        d = sqrt((E + h_bar * self._omega) ** 2 - self._gap_energy ** 2)
+        c = sqrt(-E + self._gap_energy)
+        d = sqrt((E + h_bar * self._omega) + self._gap_energy)
 
         return a * b / (c * d)
 
@@ -146,7 +123,7 @@ class MattisBardeenImaginaryIntegrand(IntegrandInterface):
         return IntegrandInterval(start, end)
 
     def evaluate(self, E: float) -> float:
-        a = 1 - 2 * f(E + h_bar * self._omega, self._temperature)
+        a = 1 - 2 * fermi_dirac_function(E + h_bar * self._omega, self._temperature)
         b = E ** 2 + self._gap_energy ** 2 + h_bar * self._omega * E
         c = sqrt(self._gap_energy ** 2 - E ** 2)
         d = sqrt((E + h_bar * self._omega) ** 2 - self._gap_energy ** 2)
@@ -169,6 +146,7 @@ class MattisBardeenComplexConductivity(SuperconductorConductivityInterface):
     def evaluate_first_real_integral(
         self, gap_energy: float, temperature: float, omega: float
     ) -> float:
+        # return 0
         integrand = MattisBardeenRealFirstIntegrand(gap_energy, temperature, omega)
         integrand = remove_lower_singularity(integrand)
         first_real_integral = self._integrator.integrate(integrand)
@@ -181,8 +159,6 @@ class MattisBardeenComplexConductivity(SuperconductorConductivityInterface):
             return 0
 
         integrand = MattisBardeenRealSecondIntegrand(gap_energy, temperature, omega)
-        integrand = remove_lower_singularity(integrand)
-        integrand = remove_upper_singularity(integrand)
         second_real_integral = self._integrator.integrate(integrand)
         return second_real_integral
 
@@ -205,7 +181,7 @@ class MattisBardeenComplexConductivity(SuperconductorConductivityInterface):
         sigma_i = self.evaluate_imaginary_integral(gap_energy, temperature, omega)
 
         scale = self._conductivity_0 / (h_bar * omega)
-        unscaled = 2 * sigma_r1 + sigma_r2 + sigma_i * 1j
+        unscaled = 2 * sigma_r1 - sigma_r2 + sigma_i * 1j
 
         return scale * unscaled
 
