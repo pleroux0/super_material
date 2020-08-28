@@ -79,12 +79,13 @@ class BCSGapEnergy(GapEnergyInterface):
             return 0
 
         to = self.gap_energy_0() * sinh(self.eta())
+        temperature_scale = 1 / (2 * k_B * temperature)
 
         def gap_energy_integrand(z, dirac):
             dirac2 = dirac * dirac
             z2 = z * z
             expr = sqrt(dirac2 + z2)
-            return tanh(expr / (2 * k_B * temperature)) / expr
+            return tanh(expr * temperature_scale) / expr
 
         def equation(dirac):
             result = integrate.quad(gap_energy_integrand, 0, to, args=(dirac))
