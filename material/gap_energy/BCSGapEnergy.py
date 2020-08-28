@@ -1,13 +1,13 @@
 from math import tanh, sinh, sqrt
+from functools import lru_cache
 
 import scipy.integrate as integrate
 import scipy.optimize as optimize
 
 from ..constants import k_B
-from ..cache import cache
+from ..integrate.IntegrandBoundary import IntegrandBoundary
 from ..integrate.IntegrandInterface import IntegrandInterface
 from ..integrate.IntegrandInterval import IntegrandInterval
-from ..integrate.IntegrandBoundary import IntegrandBoundary
 from ..integrate.QuadpackIntegrator import QuadpackIntegrator
 
 from .GapEnergyInterface import GapEnergyInterface
@@ -58,7 +58,7 @@ class BCSGapEnergy(GapEnergyInterface):
     def kappa(self):
         return self._kappa
 
-    @cache
+    @lru_cache
     def eta(self):
         """ Calculate and return eta """
 

@@ -13,48 +13,44 @@ from material.gap_energy import BCSGapEnergy
 warnings.simplefilter("error")
 
 
-def miniapp(
-        conductivity_0: float, gap_energy_0: float, kappa: float, temperature: float, scattering_time: float
-):
+def zimmermann_example():
+    conductivity_0 = 1
+    gap_energy_0 = 1.5e-3
+    kappa = 2.3
+    temperature = 1e-3
     gap_energy = BCSGapEnergy(gap_energy_0, kappa)
-    gap_energy_T = gap_energy.evaluate(temperature)
-    conductivity = ZimmermannSuperconductorConductivity(gap_energy, conductivity_0, scattering_time)
 
-    gap_frequency = gap_energy_T / (pi * h_bar)
-    n = 4
-    max_frequency = gap_frequency * n
+    n = 50
+    x = np.linspace(0, 7, 7 * n + 6)[1:]
+    omega = (2 * x * gap_energy_0) / h_bar
+    frequency = omega / (2 * np.pi)
 
-    frequency_values = np.linspace(0, max_frequency, (n + 2) + (n + 1) * 100)[1:]
-    conductivity_values = np.array(
-        [
-            conductivity.evaluate(temperature, frequency)
-            for frequency in frequency_values
-        ]
-    )
+    y = np.array([0.0625, 0.125, 0.25, 0.5, 1, 2, 4, 8, 16, 500])
 
-    frequency_scale = gap_frequency
-    conductivity_scale = conductivity_0
+    conductivity = []
 
-    plt.figure()
+    for yi in y:
+        scattering_time = h_bar / (2 * yi * gap_energy_0)
+        zimmermann = ZimmermannSuperconductorConductivity(
+            gap_energy, conductivity_0, scattering_time
+        )
+        s = [zimmermann.evaluate(temperature, f) for f in frequency]
+        conductivity.append(np.array(s))
 
-    plt.plot(
-        frequency_values / frequency_scale,
-        conductivity_values.real / conductivity_scale,
-    )
+    _, axes = plt.subplots(nrows=2, ncols=1)
 
-    plt.plot(
-        frequency_values / frequency_scale,
-        conductivity_values.imag / conductivity_scale,
-    )
+    for index in range(len(y)):
+        s = conductivity[index]
+        axes[0].plot(x, s.real)
+        axes[1].plot(x, s.imag)
 
-    plt.xlabel("Frequency [$\\omega_g$]")
-    plt.xlim(0, max_frequency / frequency_scale)
-
-    plt.ylabel("Conductivity [$\\sigma_0$]")
-    plt.ylim(0, conductivity_0 / conductivity_scale)
+    axes[0].set_xlim(0, 7)
+    axes[1].set_xlim(0, 7)
+    axes[0].set_ylim(0, 1)
+    axes[1].set_ylim(0, 1)
 
     plt.show()
 
 
 if __name__ == "__main__":
-    miniapp(2.4e7, 1.5e-3, 2.3, 4.2, 3e-14*1e-6)
+    zimmermann_example()

@@ -1,9 +1,4 @@
-from math import sqrt, exp, pi, inf, sin, tanh
-from typing import List
-from dataclasses import dataclass
-
-import scipy.integrate
-import numpy as np
+from math import sqrt, pi, tanh
 
 from .SuperconductorConductivityInterface import SuperconductorConductivityInterface
 
@@ -14,7 +9,6 @@ from ..integrate import (
     IntegrandInterval,
     ScipyQuadratureIntegrator,
     TransformedIntegrand,
-    IntegrandIntervalTransformInterface,
     ChebyshevLowerSingularityTransform,
     ChebyshevUpperSingularityTransform,
 )
@@ -187,39 +181,6 @@ class ZimmermannFirstIntegralNormalPart(IntegrandInterface):
         return equations.I1(E)
 
 
-class ZimmermannSecondIntegral(IntegrandInterface):
-    _gap_energy: float
-    _temperature: float
-    _omega: float
-    _scattering_time: float
-
-    __slots__ = ()
-
-    def __init__(
-        self,
-        gap_energy: float,
-        scattering_time: float,
-        temperature: float,
-        omega: float,
-    ):
-        self._gap_energy = gap_energy
-        self._scattering_time = scattering_time
-        self._temperature = temperature
-        self._omega = omega
-
-    def interval(self) -> IntegrandInterval:
-        lower = IntegrandBoundary(self._gap_energy, False)
-        upper = IntegrandBoundary(inf, False)
-        interval = IntegrandInterval(lower, upper)
-        return interval
-
-    def evaluate(self, E: float) -> float:
-        equations = ZimmermannSuperconductorEquations(
-            self._gap_energy, self._scattering_time, self._temperature, self._omega,
-        )
-        return equations.I2(E)
-
-
 class ZimmermannSecondIntegralTransformed(IntegrandInterface):
     _gap_energy: float
     _temperature: float
@@ -305,10 +266,10 @@ class ZimmermannSuperconductorConductivity(SuperconductorConductivityInterface):
         self._conductivity_0 = conductivity_0
         self._scattering_time = scattering_time
         self._integrator = ScipyQuadratureIntegrator(
-            absolute_tolerance=1e-9,
-            relative_tolerance=1e-9,
-            maximum_order=200,
-            minimum_order=50,
+            absolute_tolerance=1e-6,
+            relative_tolerance=1e-6,
+            maximum_order=300,
+            minimum_order=20,
         )
 
     def evaluate_first_integral_superconductor_part(
