@@ -21,6 +21,7 @@ from ..integrate import (
 
 from ..constants import h_bar, k_B
 
+
 @dataclass
 class AbsOrRelTolerance:
     atol: float = 1e-6
@@ -31,6 +32,7 @@ class AbsOrRelTolerance:
             abs(previous - current) < self.rtol * previous
             or abs(previous - current) < self.atol
         )
+
 
 class ChebychevGaussQuadrature:
     _x: List[np.ndarray]
@@ -62,8 +64,15 @@ class ChebychevGaussQuadrature:
         x, w = self._get_level(level)
         return integrand(x).dot(w)
 
-
-    def integrate(self, f, a=-1, b=1, min_levels=10, max_levels=20, converge=AbsOrRelTolerance(1e-6)):
+    def integrate(
+        self,
+        f,
+        a=-1,
+        b=1,
+        min_levels=10,
+        max_levels=20,
+        converge=AbsOrRelTolerance(1e-6),
+    ):
         m = (b - a) * 0.5
         c = (b + a) * 0.5
 
@@ -88,6 +97,7 @@ class ChebychevGaussQuadrature:
             )
         )
 
+
 def remove_lower_singularity(integrand: IntegrandInterface):
     lower_singularity = integrand.interval().start().value()
     transform = ChebyshevLowerSingularityTransform(lower_singularity)
@@ -100,6 +110,7 @@ def remove_upper_singularity(integrand: IntegrandInterface):
     transform = ChebyshevUpperSingularityTransform(upper_singularity)
     transformed_integrand = TransformedIntegrand(integrand, transform)
     return transformed_integrand
+
 
 def _p1(delta, e, w):
     return np.sqrt((e + w * h_bar) ** 2 - delta ** 2)
@@ -275,7 +286,14 @@ class ZimmermansConductivity:
         args = (delta, w, tau, T)
 
         r_konrad, _ = scipy.integrate.quadrature(
-            _integrand_i1_konrad, a, b, args=args, tol=tol, rtol=tol, miniter=10, maxiter=200
+            _integrand_i1_konrad,
+            a,
+            b,
+            args=args,
+            tol=tol,
+            rtol=tol,
+            miniter=10,
+            maxiter=200,
         )
 
         # r_konrad, _ = scipy.integrate.quad(
@@ -322,7 +340,14 @@ class ZimmermansConductivity:
         args = (delta, w, tau, T)
 
         r_konrad, _ = scipy.integrate.quadrature(
-            _integrand_i3_konrad, a, b, args=args, tol=tol, rtol=tol, miniter=20, maxiter=200
+            _integrand_i3_konrad,
+            a,
+            b,
+            args=args,
+            tol=tol,
+            rtol=tol,
+            miniter=20,
+            maxiter=200,
         )
 
         def integrand_cheby(e):
@@ -348,6 +373,7 @@ class ZimmermansConductivity:
         )
 
         return out[0]
+
 
 class ZimmermannSuperconductorEquations:
     _gap_energy: float
@@ -532,6 +558,7 @@ class ZimmermannSecondIntegral(IntegrandInterface):
         )
         return equations.I2(E)
 
+
 class ZimmermannSecondIntegralTransformed(IntegrandInterface):
     _gap_energy: float
     _temperature: float
@@ -559,8 +586,8 @@ class ZimmermannSecondIntegralTransformed(IntegrandInterface):
         return interval
 
     def evaluate(self, x: float) -> float:
-        E = self._gap_energy + (x/(1-x))**2
-        scale = 2 * x/((1-x)**3)
+        E = self._gap_energy + (x / (1 - x)) ** 2
+        scale = 2 * x / ((1 - x) ** 3)
         equations = ZimmermannSuperconductorEquations(
             self._gap_energy, self._scattering_time, self._temperature, self._omega,
         )
@@ -621,7 +648,9 @@ class ZimmermannSuperconductorConductivity(SuperconductorConductivityInterface):
         self._integrator = ScipyQuadratureIntegrator(
             absolute_tolerance=1e-8, relative_tolerance=1e-6, maximum_order=200
         )
-        self._legacy= ZimmermansConductivity(gap_energy, scattering_time, conductivity_0)
+        self._legacy = ZimmermansConductivity(
+            gap_energy, scattering_time, conductivity_0
+        )
 
     def evaluate_first_integral_superconductor_part(
         self, gap_energy: float, temperature: float, omega: float
@@ -648,6 +677,12 @@ class ZimmermannSuperconductorConductivity(SuperconductorConductivityInterface):
     def evaluate_second_integral(
         self, gap_energy: float, temperature: float, omega: float
     ):
+        args = (omega, self._scattering_time / h_bar, gap_energy, temperature)
+        tol = 1.49e-08
+        s = self._legacy._calc_i2(*args, tol)
+
+        return s
+
         integrand = ZimmermannSecondIntegralTransformed(
             gap_energy, self._scattering_time, temperature, omega
         )
@@ -667,6 +702,19 @@ class ZimmermannSuperconductorConductivity(SuperconductorConductivityInterface):
         return third_integral
 
     def evaluate_j(self, gap_energy: float, temperature: float, omega: float):
+        s = 0
+
+        args = (omega, self._scattering_time / h_bar, gap_energy, temperature)
+        tol = 1.49e-08
+
+        if h_bar * omega <= 2 * gap_energy:
+            s += self._legacy._calc_i1_part_1(*args, tol)
+        else:
+            s += self._legacy._calc_i1_part_2(*args, tol)
+            s += self._legacy._calc_i3(*args, tol)
+
+        return s
+
         if h_bar * omega <= 2 * gap_energy:
             first_integral = self.evaluate_first_integral_superconductor_part(
                 gap_energy, temperature, omega
@@ -683,12 +731,10 @@ class ZimmermannSuperconductorConductivity(SuperconductorConductivityInterface):
         return J
 
     def evaluate(self, temperature: float, frequency: float) -> complex:
-        return self._legacy.evaluate(frequency, temperature)
-
         omega = 2 * pi * frequency
         gap_energy = self._gap_energy.evaluate(temperature)
 
-        scale = self._conductivity_0 * 1j / (2 * h_bar * omega * self._scattering_time)
+        scale = self._conductivity_0 * 1j / (2 * omega * self._scattering_time)
 
         J = self.evaluate_j(gap_energy, temperature, omega)
         second_integral = self.evaluate_second_integral(gap_energy, temperature, omega)
