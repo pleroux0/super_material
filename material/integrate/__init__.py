@@ -14,6 +14,7 @@ from .TransformedIntegrand import *
 # Integrator
 from .IntegratorInterface import *
 from .QuadpackIntegrator import *
+from .ScipyQuadratureIntegrator import *
 
 # Transforms
 from .GuassQuadratureIntervalTransform import *
