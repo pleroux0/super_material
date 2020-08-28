@@ -655,6 +655,10 @@ class ZimmermannSuperconductorConductivity(SuperconductorConductivityInterface):
     def evaluate_first_integral_superconductor_part(
         self, gap_energy: float, temperature: float, omega: float
     ):
+        args = (omega, self._scattering_time / h_bar, gap_energy, temperature)
+        tol = 1.49e-08
+        return self._legacy._calc_i1_part_1(*args, tol)
+
         integrand = ZimmermannFirstIntegralSuperconductorPart(
             gap_energy, self._scattering_time, temperature, omega
         )
@@ -666,6 +670,10 @@ class ZimmermannSuperconductorConductivity(SuperconductorConductivityInterface):
     def evaluate_first_integral_normal_part(
         self, gap_energy: float, temperature: float, omega: float
     ):
+        args = (omega, self._scattering_time / h_bar, gap_energy, temperature)
+        tol = 1.49e-08
+        return self._legacy._calc_i1_part_2(*args, tol)
+
         integrand = ZimmermannFirstIntegralNormalPart(
             gap_energy, self._scattering_time, temperature, omega
         )
@@ -693,6 +701,10 @@ class ZimmermannSuperconductorConductivity(SuperconductorConductivityInterface):
     def evaluate_third_integral(
         self, gap_energy: float, temperature: float, omega: float
     ):
+        args = (omega, self._scattering_time / h_bar, gap_energy, temperature)
+        tol = 1.49e-08
+        return self._legacy._calc_i3(*args, tol)
+
         integrand = ZimmermannThirdIntegral(
             gap_energy, self._scattering_time, temperature, omega
         )
@@ -702,19 +714,6 @@ class ZimmermannSuperconductorConductivity(SuperconductorConductivityInterface):
         return third_integral
 
     def evaluate_j(self, gap_energy: float, temperature: float, omega: float):
-        s = 0
-
-        args = (omega, self._scattering_time / h_bar, gap_energy, temperature)
-        tol = 1.49e-08
-
-        if h_bar * omega <= 2 * gap_energy:
-            s += self._legacy._calc_i1_part_1(*args, tol)
-        else:
-            s += self._legacy._calc_i1_part_2(*args, tol)
-            s += self._legacy._calc_i3(*args, tol)
-
-        return s
-
         if h_bar * omega <= 2 * gap_energy:
             first_integral = self.evaluate_first_integral_superconductor_part(
                 gap_energy, temperature, omega
