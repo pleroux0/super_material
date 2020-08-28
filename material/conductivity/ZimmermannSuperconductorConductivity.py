@@ -22,82 +22,6 @@ from ..integrate import (
 from ..constants import h_bar, k_B
 
 
-@dataclass
-class AbsOrRelTolerance:
-    atol: float = 1e-6
-    rtol: float = 1e-6
-
-    def __call__(self, previous, current):
-        return (
-            abs(previous - current) < self.rtol * previous
-            or abs(previous - current) < self.atol
-        )
-
-
-class ChebychevGaussQuadrature:
-    _x: List[np.ndarray]
-    _w: List[np.ndarray]
-    _num_levels: int
-
-    __slots__ = ("_x", "_w", "_num_levels")
-
-    def __init__(self):
-        self._x = []
-        self._w = []
-        self._num_levels = 0
-
-    def _next_level(self):
-        x, w = scipy.special.roots_chebyt(2 ** self._num_levels)
-        self._x.append(x)
-        self._w.append(w)
-        self._num_levels += 1
-
-    def _get_level(self, level: int):
-        assert level >= 0
-
-        while level >= self._num_levels:
-            self._next_level()
-
-        return self._x[level], self._w[level]
-
-    def _integrate_level(self, integrand, level):
-        x, w = self._get_level(level)
-        return integrand(x).dot(w)
-
-    def integrate(
-        self,
-        f,
-        a=-1,
-        b=1,
-        min_levels=10,
-        max_levels=20,
-        converge=AbsOrRelTolerance(1e-6),
-    ):
-        m = (b - a) * 0.5
-        c = (b + a) * 0.5
-
-        def integrand(x):
-            return m * f(m * x + c)
-
-        prev_result = self._integrate_level(integrand, 0)
-        level = 1
-
-        while level <= max_levels:
-            result = self._integrate_level(integrand, level)
-
-            if level >= min_levels and converge(prev_result, result):
-                return result
-
-            prev_result = result
-            level += 1
-
-        raise Exception(
-            "Result did not converge: prev_result={} result={}".format(
-                prev_result, result
-            )
-        )
-
-
 def remove_lower_singularity(integrand: IntegrandInterface):
     lower_singularity = integrand.interval().start().value()
     transform = ChebyshevLowerSingularityTransform(lower_singularity)
@@ -110,269 +34,6 @@ def remove_upper_singularity(integrand: IntegrandInterface):
     transform = ChebyshevUpperSingularityTransform(upper_singularity)
     transformed_integrand = TransformedIntegrand(integrand, transform)
     return transformed_integrand
-
-
-def _p1(delta, e, w):
-    return np.sqrt((e + w * h_bar) ** 2 - delta ** 2)
-
-
-def _p2(delta, e):
-    return np.sqrt(e ** 2 - delta ** 2)
-
-
-def _p3(delta, e, w):
-    return np.sqrt((e - w * h_bar) ** 2 - delta ** 2)
-
-
-def _p4(delta, e, w):
-    return np.sqrt(delta ** 2 - (e - w * h_bar) ** 2)
-
-
-def _th1(e, T):
-    return np.tanh(e / (2 * k_B * T))
-
-
-def _th2(e, w, T):
-    return np.tanh((w * h_bar + e) / (2 * k_B * T))
-
-
-def _integrand_i1(e, delta, w, tau, T):
-    p2 = _p2(delta, e)
-    p4 = 1j * _p4(delta, e, w)
-    th = _th1(e, T)
-
-    itau = 1j / tau
-
-    c42 = (delta ** 2 + e * (e - w * h_bar)) / (p2 * p4)
-
-    return th * ((1 - c42) / (p4 + p2 + itau) - (1 + c42) / (p4 - p2 + itau))
-
-
-def _integrand_i1_konrad(e, delta, w, tau, T):
-    p2 = _p2(delta, e)
-    p4 = 1j * _p4(delta, e, w)
-    th = _th1(e, T)
-
-    itau = 1j / tau
-
-    return th * ((1) / (p4 + p2 + itau) - (1) / (p4 - p2 + itau))
-
-
-def _integrand_i1_cheby_part_1(e, delta, w, tau, T):
-    p2 = _p2(delta, e)
-    p4 = 1j * _p4(delta, e, w)
-    th = _th1(e, T)
-
-    itau = 1j / tau
-
-    c42 = (
-        (delta ** 2 + e * (e - w * h_bar))
-        / (1j * np.sqrt((e + delta) * (delta + e - h_bar * w)))
-        * 2
-        / (w * h_bar)
-    )
-
-    return th * ((-c42) / (p4 + p2 + itau) - (+c42) / (p4 - p2 + itau))
-
-
-def _integrand_i1_cheby_part_2(e, delta, w, tau, T):
-    p2 = _p2(delta, e)
-    p4 = 1j * _p4(delta, e, w)
-    th = _th1(e, T)
-
-    itau = 1j / tau
-
-    c42 = (delta ** 2 + e * (e - w * h_bar)) / (1j * p2 * delta)
-
-    return th * ((-c42) / (p4 + p2 + itau) - (+c42) / (p4 - p2 + itau))
-
-
-def _integrand_i3(e, delta, w, tau, T):
-    p2 = _p2(delta, e)
-    p3 = _p3(delta, e, w)
-    th = _th1(e, T)
-
-    itau = 1j / tau
-    c32 = (delta ** 2 + e * (e - w * h_bar)) / (p2 * p3)
-
-    return th * ((1 - c32) / (p3 + p2 + itau) - (1 + c32) / (p3 - p2 + itau))
-
-
-def _integrand_i3_konrad(e, delta, w, tau, T):
-    p2 = _p2(delta, e)
-    p3 = _p3(delta, e, w)
-    th = _th1(e, T)
-
-    itau = 1j / tau
-
-    return th * ((1) / (p3 + p2 + itau) - (1) / (p3 - p2 + itau))
-
-
-def _integrand_i3_cheby(e, delta, w, tau, T):
-    p2 = _p2(delta, e)
-    p3 = _p3(delta, e, w)
-    th = _th1(e, T)
-
-    itau = 1j / tau
-    c32 = (
-        (delta ** 2 + e * (e - w * h_bar))
-        / (np.sqrt(-(delta + e) * (e - delta - h_bar * w)))
-        * 2
-        / (w * h_bar - 2 * delta)
-    )
-
-    return th * ((-c32) / (p3 + p2 + itau) - (c32) / (p3 - p2 + itau))
-
-
-def _integrand_i2(e, delta, w, tau, T):
-    p1 = _p1(delta, e, w)
-    p2 = _p2(delta, e)
-
-    th1 = _th1(e, T)
-    th2 = _th2(e, w, T)
-
-    itau = 1j / tau
-    c12 = (delta ** 2 + e * (e + w * h_bar)) / (p1 * p2)
-
-    out = th2 * ((1 + c12) / (p1 - p2 + itau) - (1 - c12) / (-p1 - p2 + itau))
-    out += th1 * ((1 - c12) / (p1 + p2 + itau) - (1 + c12) / (p1 - p2 + itau))
-
-    return out
-
-
-class ZimmermansConductivity:
-    _gap_energy: GapEnergyInterface
-    _tau: float
-    _conductivity_0: float
-    _chebyshev_gauss_quadrature: ChebychevGaussQuadrature
-
-    __slots__ = (
-        "_gap_energy",
-        "_tau",
-        "_conductivity_0",
-        "_chebyshev_gauss_quadrature",
-    )
-
-    def __init__(
-        self, gap_energy: GapEnergyInterface, tau: float, conductivity_0: float
-    ):
-        self._gap_energy = gap_energy
-        self._tau = tau / h_bar
-        self._conductivity_0 = conductivity_0
-        self._chebyshev_gauss_quadrature = ChebychevGaussQuadrature()
-
-    def evaluate(self, frequency: float = 10e9, temperature: float = 4.2) -> complex:
-        delta = self._gap_energy.evaluate(temperature)
-        w = frequency * 2 * np.pi
-        args = (w, self._tau, delta, temperature)
-
-        tol = 1.49e-08
-        # tol = 1e-12
-
-        s = self._calc_i2(*args, tol)
-
-        if h_bar * w <= 2 * delta:
-            s += self._calc_i1_part_1(*args, tol)
-        else:
-            s += self._calc_i1_part_2(*args, tol)
-            s += self._calc_i3(*args, tol)
-
-        return s * 1j / (2 * h_bar * w * self._tau) * self._conductivity_0
-
-    def _calc_i1_part_1(self, w, tau, gap_energy, T, tol=1e-6):
-        delta = gap_energy
-
-        a, b = delta, delta + h_bar * w
-        args = (delta, w, tau, T)
-
-        r_konrad, _ = scipy.integrate.quadrature(
-            _integrand_i1_konrad,
-            a,
-            b,
-            args=args,
-            tol=tol,
-            rtol=tol,
-            miniter=10,
-            maxiter=200,
-        )
-
-        # r_konrad, _ = scipy.integrate.quad(
-        #     lambda x: _integrand_i1_konrad(x, *args),
-        #     a,
-        #     b,
-        #     epsabs=tol,
-        #     epsrel=tol,
-        #     points=(a, b),
-        # )
-
-        def integrand_cheby(e):
-            return _integrand_i1_cheby_part_1(e, *args)
-
-        r_cheby = self._chebyshev_gauss_quadrature.integrate(
-            integrand_cheby, a, b, min_levels=10, max_levels=20
-        )
-
-        return r_cheby + r_konrad
-
-    def _calc_i1_part_2(self, w, tau, gap_energy, T, tol=1e-6):
-        delta = gap_energy
-
-        a, b = h_bar * w - delta, delta + h_bar * w
-        args = (delta, w, tau, T)
-
-        r_konrad, _ = scipy.integrate.quadrature(
-            _integrand_i1_konrad, a, b, args=args, tol=tol, miniter=20, maxiter=200
-        )
-
-        def integrand_cheby(e):
-            return _integrand_i1_cheby_part_2(e, *args)
-
-        r_cheby = self._chebyshev_gauss_quadrature.integrate(
-            integrand_cheby, a, b, min_levels=10, max_levels=20
-        )
-
-        return r_cheby + r_konrad
-
-    def _calc_i3(self, w, tau, gap_energy, T, tol=1e-6):
-        delta = gap_energy
-
-        a, b = delta, -delta + h_bar * w
-        args = (delta, w, tau, T)
-
-        r_konrad, _ = scipy.integrate.quadrature(
-            _integrand_i3_konrad,
-            a,
-            b,
-            args=args,
-            tol=tol,
-            rtol=tol,
-            miniter=20,
-            maxiter=200,
-        )
-
-        def integrand_cheby(e):
-            return _integrand_i3_cheby(e, *args)
-
-        r_cheby = self._chebyshev_gauss_quadrature.integrate(
-            integrand_cheby, a, b, min_levels=10, max_levels=20
-        )
-
-        return r_cheby + r_konrad
-
-    @staticmethod
-    def _calc_i2(w, tau, gap_energy, T, tol=1e-6):
-        delta = gap_energy
-
-        def integrand(x):
-            m = delta + (x / (1 - x)) ** 2
-            suffix = 2 * x / ((1 - x) ** 3)
-            return _integrand_i2(m, delta, w, tau, T) * suffix
-
-        out = scipy.integrate.quadrature(
-            integrand, 0, 1, tol=tol, miniter=20, maxiter=200, rtol=tol
-        )
-
-        return out[0]
 
 
 class ZimmermannSuperconductorEquations:
@@ -416,11 +77,11 @@ class ZimmermannSuperconductorEquations:
         p4 = self.p4(E)
         th1 = self.th1(E)
 
-        tmp = self._gap_energy ** 2 + E * (E - self._omega * h_bar) / (p2 * p4)
+        tmp = (self._gap_energy ** 2 + E * (E - self._omega * h_bar)) / (p2 * p4)
 
         out = th1 * (
-            (1 - tmp) / (p4 + p2 + 1j / self._scattering_time)
-            - (1 + tmp) / (p4 - p2 + 1j / self._scattering_time)
+            (1 - tmp) / (p4 + p2 + h_bar * 1j / self._scattering_time)
+            - (1 + tmp) / (p4 - p2 + h_bar * 1j / self._scattering_time)
         )
 
         return out
@@ -431,16 +92,16 @@ class ZimmermannSuperconductorEquations:
         th1 = self.th1(E)
         th2 = self.th2(E)
 
-        tmp = self._gap_energy ** 2 + E * (E + self._omega * h_bar) / (p1 * p2)
+        tmp = (self._gap_energy ** 2 + E * (E + self._omega * h_bar)) / (p1 * p2)
 
         part1 = th2 * (
-            (1 + tmp) / (p1 - p2 + 1j / self._scattering_time)
-            - (1 - tmp) / (-p1 - p2 + 1j / self._scattering_time)
+            (1 + tmp) / (p1 - p2 + h_bar * 1j / self._scattering_time)
+            - (1 - tmp) / (-p1 - p2 + h_bar * 1j / self._scattering_time)
         )
 
         part2 = th1 * (
-            (1 - tmp) / (p1 + p2 + 1j / self._scattering_time)
-            - (1 + tmp) / (p1 - p2 + 1j / self._scattering_time)
+            (1 - tmp) / (p1 + p2 + h_bar * 1j / self._scattering_time)
+            - (1 + tmp) / (p1 - p2 + h_bar * 1j / self._scattering_time)
         )
 
         return part1 + part2
@@ -450,11 +111,11 @@ class ZimmermannSuperconductorEquations:
         p3 = self.p3(E)
         th1 = self.th1(E)
 
-        tmp = self._gap_energy ** 2 + E * (E - self._omega * h_bar) / (p3 * p2)
+        tmp = (self._gap_energy ** 2 + E * (E - self._omega * h_bar)) / (p3 * p2)
 
         out = th1 * (
-            (1 - tmp) / (p3 + p2 + 1j / self._scattering_time)
-            - (1 + tmp) / (p3 - p2 + 1j / self._scattering_time)
+            (1 - tmp) / (p3 + p2 + h_bar * 1j / self._scattering_time)
+            - (1 + tmp) / (p3 - p2 + h_bar * 1j / self._scattering_time)
         )
 
         return out
@@ -634,8 +295,6 @@ class ZimmermannSuperconductorConductivity(SuperconductorConductivityInterface):
     _scattering_time: float
     _integrator: ScipyQuadratureIntegrator
 
-    _legacy: ZimmermansConductivity
-
     def __init__(
         self,
         gap_energy: GapEnergyInterface,
@@ -646,19 +305,15 @@ class ZimmermannSuperconductorConductivity(SuperconductorConductivityInterface):
         self._conductivity_0 = conductivity_0
         self._scattering_time = scattering_time
         self._integrator = ScipyQuadratureIntegrator(
-            absolute_tolerance=1e-8, relative_tolerance=1e-6, maximum_order=200
-        )
-        self._legacy = ZimmermansConductivity(
-            gap_energy, scattering_time, conductivity_0
+            absolute_tolerance=1e-9,
+            relative_tolerance=1e-9,
+            maximum_order=200,
+            minimum_order=50,
         )
 
     def evaluate_first_integral_superconductor_part(
         self, gap_energy: float, temperature: float, omega: float
     ):
-        args = (omega, self._scattering_time / h_bar, gap_energy, temperature)
-        tol = 1.49e-08
-        return self._legacy._calc_i1_part_1(*args, tol)
-
         integrand = ZimmermannFirstIntegralSuperconductorPart(
             gap_energy, self._scattering_time, temperature, omega
         )
@@ -670,10 +325,6 @@ class ZimmermannSuperconductorConductivity(SuperconductorConductivityInterface):
     def evaluate_first_integral_normal_part(
         self, gap_energy: float, temperature: float, omega: float
     ):
-        args = (omega, self._scattering_time / h_bar, gap_energy, temperature)
-        tol = 1.49e-08
-        return self._legacy._calc_i1_part_2(*args, tol)
-
         integrand = ZimmermannFirstIntegralNormalPart(
             gap_energy, self._scattering_time, temperature, omega
         )
@@ -685,12 +336,6 @@ class ZimmermannSuperconductorConductivity(SuperconductorConductivityInterface):
     def evaluate_second_integral(
         self, gap_energy: float, temperature: float, omega: float
     ):
-        args = (omega, self._scattering_time / h_bar, gap_energy, temperature)
-        tol = 1.49e-08
-        s = self._legacy._calc_i2(*args, tol)
-
-        return s
-
         integrand = ZimmermannSecondIntegralTransformed(
             gap_energy, self._scattering_time, temperature, omega
         )
@@ -701,10 +346,6 @@ class ZimmermannSuperconductorConductivity(SuperconductorConductivityInterface):
     def evaluate_third_integral(
         self, gap_energy: float, temperature: float, omega: float
     ):
-        args = (omega, self._scattering_time / h_bar, gap_energy, temperature)
-        tol = 1.49e-08
-        return self._legacy._calc_i3(*args, tol)
-
         integrand = ZimmermannThirdIntegral(
             gap_energy, self._scattering_time, temperature, omega
         )
