@@ -4,8 +4,8 @@ from cProfile import Profile
 
 from numpy import linspace
 
-from material.gap_energy import BCSGapEnergy
-from material.conductivity import MattisBardeenComplexConductivity
+from super_material.gap_energy import BCSGapEnergy
+from super_material.conductivity import MattisBardeenComplexConductivity
 
 
 def run():

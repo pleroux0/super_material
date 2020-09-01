@@ -82,9 +82,7 @@ class BCSGapEnergy(GapEnergyInterface):
         temperature_scale = 1 / (2 * k_B * temperature)
 
         def gap_energy_integrand(z, dirac):
-            dirac2 = dirac * dirac
-            z2 = z * z
-            expr = sqrt(dirac2 + z2)
+            expr = sqrt(dirac * dirac + z * z)
             return tanh(expr * temperature_scale) / expr
 
         def equation(dirac):

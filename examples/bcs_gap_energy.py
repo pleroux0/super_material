@@ -3,7 +3,7 @@
 from numpy import linspace, array
 from matplotlib.pyplot import subplots, show
 
-from material.gap_energy import BCSGapEnergy
+from super_material.gap_energy import BCSGapEnergy
 
 
 def bcs_gap_energy_example():

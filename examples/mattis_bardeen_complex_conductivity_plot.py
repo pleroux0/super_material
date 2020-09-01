@@ -6,9 +6,9 @@ from math import pi
 import numpy as np
 import matplotlib.pyplot as plt
 
-from material.conductivity import MattisBardeenComplexConductivity
-from material.constants import h_bar
-from material.gap_energy import BCSGapEnergy
+from super_material.conductivity import MattisBardeenComplexConductivity
+from super_material.constants import h_bar
+from super_material.gap_energy import BCSGapEnergy
 
 warnings.simplefilter("error")
 
