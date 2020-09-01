@@ -1,6 +1,6 @@
 from math import isclose
 
-from material.integrate import (
+from super_material.integrate import (
     QuadpackIntegrator,
     LinearGuassQuadratureIntervalTransform,
     TransformedIntegrand,

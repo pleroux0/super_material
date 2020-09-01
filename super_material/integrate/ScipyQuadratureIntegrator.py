@@ -15,7 +15,7 @@ class ScipyQuadratureIntegrator(IntegratorInterface):
         absolute_tolerance: float = 1.49e-8,
         relative_tolerance: float = 1.49e-8,
         maximum_order: int = 50,
-        minimum_order: int = 1
+        minimum_order: int = 1,
     ):
         self._absolute_tolerance = absolute_tolerance
         self._relative_tolerance = relative_tolerance
@@ -35,7 +35,7 @@ class ScipyQuadratureIntegrator(IntegratorInterface):
             tol=self._absolute_tolerance,
             rtol=self._relative_tolerance,
             maxiter=self._maximum_order,
-            miniter=self._minimum_order
+            miniter=self._minimum_order,
         )
 
         return output

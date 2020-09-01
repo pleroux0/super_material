@@ -1,9 +1,9 @@
 from math import isclose, atanh, atan, sqrt, pi
 
-from material.integrate.ChebyshevQuadratureTransform import *
+from super_material.integrate.ChebyshevQuadratureTransform import *
 
 
-from material.integrate import (
+from super_material.integrate import (
     QuadpackIntegrator,
     TransformedIntegrand,
     IntegrandInterface,

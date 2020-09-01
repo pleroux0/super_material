@@ -1,4 +1,8 @@
-from material.integrate import IntegrandInterface, IntegrandBoundary, IntegrandInterval
+from super_material.integrate import (
+    IntegrandInterface,
+    IntegrandBoundary,
+    IntegrandInterval,
+)
 
 
 class ParabolicTestIntegrand(IntegrandInterface):

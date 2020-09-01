@@ -2,11 +2,11 @@ from dataclasses import dataclass
 
 import numpy as np
 
-from material.conductivity.ZimmermannSuperconductorConductivity import (
+from super_material.conductivity.ZimmermannSuperconductorConductivity import (
     ZimmermannSuperconductorConductivity,
 )
 
-from material.gap_energy import BCSGapEnergy
+from super_material.gap_energy import BCSGapEnergy
 
 
 @dataclass

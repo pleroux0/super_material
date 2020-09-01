@@ -1,6 +1,6 @@
 from math import isclose
 
-from material.gap_energy.GapEnergyInterface import GapEnergyInterface
+from super_material.gap_energy.GapEnergyInterface import GapEnergyInterface
 
 
 def assert_gap_energy_interface(gap_energy: GapEnergyInterface):

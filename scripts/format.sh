@@ -1,3 +1,3 @@
 #!/bin/sh
 
-poetry run black --target-version py38 material tests
+poetry run black --target-version py38 super_material tests

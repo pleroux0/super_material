@@ -1,1 +1,1 @@
-from material import __version__
+from super_material import __version__

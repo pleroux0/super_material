@@ -2,7 +2,7 @@ from dataclasses import dataclass
 
 import numpy as np
 
-from material.gap_energy.BCSGapEnergy import BCSGapEnergy
+from super_material.gap_energy.BCSGapEnergy import BCSGapEnergy
 
 from .test_GapEnergyInterface import assert_gap_energy_interface
 

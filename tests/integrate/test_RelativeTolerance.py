@@ -1,4 +1,4 @@
-from material.integrate.RelativeTolerance import RelativeTolerance
+from super_material.integrate.RelativeTolerance import RelativeTolerance
 
 from .test_ToleranceInterface import assert_tolerance_interface
 

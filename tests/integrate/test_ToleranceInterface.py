@@ -1,4 +1,4 @@
-from material.integrate import ToleranceInterface
+from super_material.integrate import ToleranceInterface
 
 
 def assert_tolerance_interface(tolerance: ToleranceInterface):

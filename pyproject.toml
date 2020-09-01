@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "material"
+name = "super_material"
 version = "0.1.0"
 description = ""
 authors = ["Paul le Roux <pleroux0@outlook.com>"]

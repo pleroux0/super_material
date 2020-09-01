@@ -1,6 +1,6 @@
-from material.integrate.ConjunctionTolerance import ConjunctionTolerance
-from material.integrate.RelativeTolerance import RelativeTolerance
-from material.integrate.AbsoluteTolerance import AbsoluteTolerance
+from super_material.integrate.ConjunctionTolerance import ConjunctionTolerance
+from super_material.integrate.RelativeTolerance import RelativeTolerance
+from super_material.integrate.AbsoluteTolerance import AbsoluteTolerance
 
 from .test_ToleranceInterface import assert_tolerance_interface
 

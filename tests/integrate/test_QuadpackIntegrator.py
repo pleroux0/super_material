@@ -1,6 +1,6 @@
 from math import isclose
 
-from material.integrate import QuadpackIntegrator
+from super_material.integrate import QuadpackIntegrator
 
 from .test_IntegratorInterface import ParabolicTestIntegrand
 
