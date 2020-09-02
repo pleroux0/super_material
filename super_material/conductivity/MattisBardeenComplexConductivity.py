@@ -51,20 +51,21 @@ class MattisBardeenRealFirstIntegrand(IntegrandInterface):
         self._omega = omega
 
     def interval(self) -> IntegrandInterval:
-        lower = IntegrandBoundary(self._gap_energy, False)
-        upper = IntegrandBoundary(inf, False)
+        lower = IntegrandBoundary(0, True)
+        upper = IntegrandBoundary(1 / (self._gap_energy ** 2), True)
         interval = IntegrandInterval(lower, upper)
         return interval
 
-    def evaluate(self, E: float) -> float:
+    def evaluate(self, x: float) -> float:
+        E = self._gap_energy / sqrt(1 - (self._gap_energy ** 4) * (x ** 2))
+
         a = fermi_dirac_function(E, self._temperature) - fermi_dirac_function(
             E + h_bar * self._omega, self._temperature
         )
         b = E ** 2 + self._gap_energy ** 2 + h_bar * self._omega * E
-        c = sqrt(E ** 2 - self._gap_energy ** 2)
         d = sqrt((E + h_bar * self._omega) ** 2 - self._gap_energy ** 2)
 
-        return a * b / (c * d)
+        return E ** 2 * a * b / d
 
 
 class MattisBardeenRealSecondIntegrand(IntegrandInterface):
