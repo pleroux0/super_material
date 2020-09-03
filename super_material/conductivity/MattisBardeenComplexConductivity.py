@@ -11,6 +11,7 @@ from ..integrate import (
     TransformedIntegrand,
     ChebyshevLowerSingularityTransform,
     ChebyshevUpperSingularityTransform,
+    ChebyshevSingularityTransform,
 )
 
 from ..constants import h_bar, k_B
@@ -26,16 +27,10 @@ def fermi_dirac_function(E, T):
     return 1 / denumerator
 
 
-def remove_lower_singularity(integrand: IntegrandInterface):
+def remove_chebyshev_singularity(integrand: IntegrandInterface):
     lower_singularity = integrand.interval().start().value()
-    transform = ChebyshevLowerSingularityTransform(lower_singularity)
-    transformed_integrand = TransformedIntegrand(integrand, transform)
-    return transformed_integrand
-
-
-def remove_upper_singularity(integrand: IntegrandInterface):
     upper_singularity = integrand.interval().end().value()
-    transform = ChebyshevUpperSingularityTransform(upper_singularity)
+    transform = ChebyshevSingularityTransform(lower_singularity, upper_singularity)
     transformed_integrand = TransformedIntegrand(integrand, transform)
     return transformed_integrand
 
@@ -51,7 +46,7 @@ class MattisBardeenRealFirstIntegrand(IntegrandInterface):
         self._omega = omega
 
     def interval(self) -> IntegrandInterval:
-        lower = IntegrandBoundary(0, True)
+        lower = IntegrandBoundary(0, False)
         upper = IntegrandBoundary(1 / (self._gap_energy ** 2), True)
         interval = IntegrandInterval(lower, upper)
         return interval
@@ -149,7 +144,6 @@ class MattisBardeenComplexConductivity(SuperconductorConductivityInterface):
     ) -> float:
         # return 0
         integrand = MattisBardeenRealFirstIntegrand(gap_energy, temperature, omega)
-        integrand = remove_lower_singularity(integrand)
         first_real_integral = self._integrator.integrate(integrand)
         return first_real_integral
 
@@ -168,8 +162,7 @@ class MattisBardeenComplexConductivity(SuperconductorConductivityInterface):
     ) -> float:
 
         integrand = MattisBardeenImaginaryIntegrand(gap_energy, temperature, omega)
-        integrand = remove_lower_singularity(integrand)
-        integrand = remove_upper_singularity(integrand)
+        integrand = remove_chebyshev_singularity(integrand)
         imaginary_integral = self._integrator.integrate(integrand)
         return imaginary_integral
 

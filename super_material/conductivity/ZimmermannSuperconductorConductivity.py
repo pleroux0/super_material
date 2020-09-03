@@ -1,4 +1,4 @@
-from math import sqrt, pi, tanh
+from math import sqrt, pi, tanh, cos
 
 from .SuperconductorConductivityInterface import SuperconductorConductivityInterface
 
@@ -9,6 +9,7 @@ from ..integrate import (
     IntegrandInterval,
     ScipyQuadratureIntegrator,
     TransformedIntegrand,
+    IntegrandIntervalTransformInterface,
     ChebyshevLowerSingularityTransform,
     ChebyshevUpperSingularityTransform,
 )
@@ -203,13 +204,13 @@ class ZimmermannSecondIntegralTransformed(IntegrandInterface):
 
     def interval(self) -> IntegrandInterval:
         lower = IntegrandBoundary(0, False)
-        upper = IntegrandBoundary(1, False)
+        upper = IntegrandBoundary(pi / (2 * self._gap_energy), False)
         interval = IntegrandInterval(lower, upper)
         return interval
 
     def evaluate(self, x: float) -> float:
-        E = self._gap_energy + (x / (1 - x)) ** 2
-        scale = 2 * x / ((1 - x) ** 3)
+        E = self._gap_energy / cos(self._gap_energy * x)
+        scale = (E * sqrt(E ** 2 - self._gap_energy ** 2))
         equations = ZimmermannSuperconductorEquations(
             self._gap_energy, self._scattering_time, self._temperature, self._omega,
         )
@@ -266,10 +267,9 @@ class ZimmermannSuperconductorConductivity(SuperconductorConductivityInterface):
         self._conductivity_0 = conductivity_0
         self._scattering_time = scattering_time
         self._integrator = ScipyQuadratureIntegrator(
-            absolute_tolerance=1e-6,
-            relative_tolerance=1e-6,
-            maximum_order=300,
-            minimum_order=20,
+            absolute_tolerance=1e-12,
+            relative_tolerance=1e-12,
+            maximum_order=50,
         )
 
     def evaluate_first_integral_superconductor_part(
@@ -300,7 +300,6 @@ class ZimmermannSuperconductorConductivity(SuperconductorConductivityInterface):
         integrand = ZimmermannSecondIntegralTransformed(
             gap_energy, self._scattering_time, temperature, omega
         )
-        integrand = remove_lower_singularity(integrand)
         second_integral = self._integrator.integrate(integrand)
         return second_integral
 
