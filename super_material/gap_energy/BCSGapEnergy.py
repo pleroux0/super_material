@@ -37,6 +37,26 @@ class BCSGapEnergy(GapEnergyInterface):
 
     Solves the self consistent gap energy equation
 
+    .. math::
+        \\frac
+            {1}
+            {N(0) V}
+        =
+        \\int\\limits_{0}^{\\hbar \\omega_{D}}
+            \\frac
+                {\\tanh{
+                    \\left(
+                    \\frac{\\sqrt{\\Delta^{2} + x^{2}}}{2 T k_{B}}
+                    \\right)}}
+                {\\sqrt{\\Delta^{2} + x^{2}}}
+            dx
+
+    The Debye frequency is given by :math: `\\omega_D`. We also define
+    :math: \\kappa = \\frac{\\hbar \\omega_{D}}{2 T_{c} k_{B}}` as a
+
+    The original BCS assumes the weak coupling limit which corresponds to
+    :math: `\\kappa \gg 1`.
+
     """
 
     _gap_energy_0: float  # In Electron Volt

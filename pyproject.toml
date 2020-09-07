@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "super_material"
-version = "0.1.0"
-description = ""
+version = "1.0.0"
+description = "Providing a constant interface to superconductor conductivity computations"
 authors = ["Paul le Roux <pleroux0@outlook.com>"]
 
 [tool.poetry.dependencies]

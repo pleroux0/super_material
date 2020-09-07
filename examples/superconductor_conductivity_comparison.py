@@ -16,13 +16,13 @@ from super_material.gap_energy import BCSGapEnergy
 warnings.simplefilter("error")
 
 
-def compare_superconductor_conductivity_example():
+def superconductor_conductivity_comparison_example():
     # Niobium paarameters
     gap_energy_0 = 1.5e-3
     kappa = 2.3
     conductivity_0 = 2.4e7
     scattering_time = 3e-14
-    dirty_scattering_time = 1e-20
+    dirty_scattering_time = 0
     temperature = 4.2
 
     # Create gap energy object
@@ -42,7 +42,7 @@ def compare_superconductor_conductivity_example():
     # Setup frequency information
     num_frequencies = 501
     maximum_frequency = 1500e9
-    frequencies = np.linspace(0, maximum_frequency, num_frequencies+1)[1:]
+    frequencies = np.linspace(0, maximum_frequency, num_frequencies + 1)[1:]
 
     # Calculate conductivity over frequency
     conductivities = []
@@ -67,7 +67,6 @@ def compare_superconductor_conductivity_example():
         axes.set_ylim(0, conductivity_0)
         axes.set_yticks([0, conductivity_0])
         axes.set_yticklabels(["0", "$\\sigma_0$"])
-
 
     # Plot conductivities
     dashes = [
@@ -100,4 +99,4 @@ def compare_superconductor_conductivity_example():
 
 
 if __name__ == "__main__":
-    compare_superconductor_conductivity_example()
+    superconductor_conductivity_comparison_example()

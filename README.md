@@ -10,10 +10,16 @@ Other codes for calculating these terms are available, but some are numerically 
 
 ## Installation
 
-Recommended installation is through pip
+General users should install the latest release with pip
 
 ```bash
 pip install super_material
+```
+
+Developers should install from the source directory using poetry
+
+```bash
+poetry install
 ```
 
 ## Usage example
@@ -34,7 +40,7 @@ result = conductivity.evaluate(temperature, frequency)
 print(f"sigma = {result}")
 ```
 
-[More detailed examples are also provided](docs/examples.md)
+For more information see [more examples](docs/examples.md) or the [API documentation](docs/api.md)
 
 ## Acknowledgements
 

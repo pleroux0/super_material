@@ -75,8 +75,8 @@ class ZimmermannSuperconductorEquations:
         tmp = (self._gap_energy ** 2 + E * (E - self._omega * h_bar)) / (p2 * p4)
 
         out = th1 * (
-            (1 - tmp) / (p4 + p2 + h_bar * 1j / self._scattering_time)
-            - (1 + tmp) / (p4 - p2 + h_bar * 1j / self._scattering_time)
+            (1 - tmp) / ((p4 + p2) * self._scattering_time + h_bar * 1j)
+            - (1 + tmp) / ((p4 - p2) * self._scattering_time + h_bar * 1j)
         )
 
         return out
@@ -90,13 +90,13 @@ class ZimmermannSuperconductorEquations:
         tmp = (self._gap_energy ** 2 + E * (E + self._omega * h_bar)) / (p1 * p2)
 
         part1 = th2 * (
-            (1 + tmp) / (p1 - p2 + h_bar * 1j / self._scattering_time)
-            - (1 - tmp) / (-p1 - p2 + h_bar * 1j / self._scattering_time)
+            (1 + tmp) / ((p1 - p2) * self._scattering_time + h_bar * 1j)
+            - (1 - tmp) / ((-p1 - p2) * self._scattering_time + h_bar * 1j)
         )
 
         part2 = th1 * (
-            (1 - tmp) / (p1 + p2 + h_bar * 1j / self._scattering_time)
-            - (1 + tmp) / (p1 - p2 + h_bar * 1j / self._scattering_time)
+            (1 - tmp) / ((p1 + p2) * self._scattering_time + h_bar * 1j)
+            - (1 + tmp) / ((p1 - p2) * self._scattering_time + h_bar * 1j)
         )
 
         return part1 + part2
@@ -109,8 +109,8 @@ class ZimmermannSuperconductorEquations:
         tmp = (self._gap_energy ** 2 + E * (E - self._omega * h_bar)) / (p3 * p2)
 
         out = th1 * (
-            (1 - tmp) / (p3 + p2 + h_bar * 1j / self._scattering_time)
-            - (1 + tmp) / (p3 - p2 + h_bar * 1j / self._scattering_time)
+            (1 - tmp) / ((p3 + p2) * self._scattering_time + h_bar * 1j)
+            - (1 + tmp) / ((p3 - p2) * self._scattering_time + h_bar * 1j)
         )
 
         return out
@@ -210,7 +210,7 @@ class ZimmermannSecondIntegralTransformed(IntegrandInterface):
 
     def evaluate(self, x: float) -> float:
         E = self._gap_energy / cos(self._gap_energy * x)
-        scale = (E * sqrt(E ** 2 - self._gap_energy ** 2))
+        scale = E * sqrt(E ** 2 - self._gap_energy ** 2)
         equations = ZimmermannSuperconductorEquations(
             self._gap_energy, self._scattering_time, self._temperature, self._omega,
         )
@@ -267,9 +267,10 @@ class ZimmermannSuperconductorConductivity(SuperconductorConductivityInterface):
         self._conductivity_0 = conductivity_0
         self._scattering_time = scattering_time
         self._integrator = ScipyQuadratureIntegrator(
-            absolute_tolerance=1e-12,
-            relative_tolerance=1e-12,
-            maximum_order=50,
+            absolute_tolerance=1e-6,
+            relative_tolerance=1e-6,
+            maximum_order=200,
+            minimum_order=1,
         )
 
     def evaluate_first_integral_superconductor_part(
@@ -334,7 +335,7 @@ class ZimmermannSuperconductorConductivity(SuperconductorConductivityInterface):
         omega = 2 * pi * frequency
         gap_energy = self._gap_energy.evaluate(temperature)
 
-        scale = self._conductivity_0 * 1j / (2 * omega * self._scattering_time)
+        scale = self._conductivity_0 * 1j / (2 * omega)
 
         J = self.evaluate_j(gap_energy, temperature, omega)
         second_integral = self.evaluate_second_integral(gap_energy, temperature, omega)
