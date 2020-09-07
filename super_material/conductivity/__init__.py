@@ -1,3 +1,5 @@
-from .MattisBardeenComplexConductivity import MattisBardeenComplexConductivity
+from .MattisBardeenSuperconductorConductivity import (
+    MattisBardeenSuperconductorConductivity,
+)
 from .SuperconductorConductivityInterface import SuperconductorConductivityInterface
 from .ZimmermannSuperconductorConductivity import ZimmermannSuperconductorConductivity

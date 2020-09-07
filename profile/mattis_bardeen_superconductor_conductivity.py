@@ -5,12 +5,12 @@ from cProfile import Profile
 from numpy import linspace
 
 from super_material.gap_energy import BCSGapEnergy
-from super_material.conductivity import MattisBardeenComplexConductivity
+from super_material.conductivity import MattisBardeenSuperconductorConductivity
 
 
 def run():
     gap_energy = BCSGapEnergy(1.5e-3, 2.3)
-    conductivity = MattisBardeenComplexConductivity(gap_energy, 2.4e7)
+    conductivity = MattisBardeenSuperconductorConductivity(gap_energy, 2.4e7)
 
     frequencies = linspace(10e9, 1500e9, 400)
 

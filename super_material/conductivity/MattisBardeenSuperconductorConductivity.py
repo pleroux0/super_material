@@ -127,7 +127,7 @@ class MattisBardeenImaginaryIntegrand(IntegrandInterface):
         return a * b / (c * d)
 
 
-class MattisBardeenComplexConductivity(SuperconductorConductivityInterface):
+class MattisBardeenSuperconductorConductivity(SuperconductorConductivityInterface):
     _gap_energy: GapEnergyInterface
     _conductivity_0: float
     _integrator: QuadpackIntegrator

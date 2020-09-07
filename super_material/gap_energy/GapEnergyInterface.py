@@ -18,6 +18,7 @@ class GapEnergyInterface(ABC):
         """ Get the gap energy at T = 0 K """
 
     def critical_frequency(self, temperature: float) -> float:
+        """ Calculates the critical frequency or gap frequency """
         return self.evaluate(temperature) / (h_bar * pi)
 
 

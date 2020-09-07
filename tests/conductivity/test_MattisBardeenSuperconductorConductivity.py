@@ -2,8 +2,8 @@ from dataclasses import dataclass
 
 import numpy as np
 
-from super_material.conductivity.MattisBardeenComplexConductivity import (
-    MattisBardeenComplexConductivity,
+from super_material.conductivity.MattisBardeenSuperconductorConductivity import (
+    MattisBardeenSuperconductorConductivity,
 )
 
 from super_material.gap_energy import BCSGapEnergy
@@ -24,7 +24,7 @@ def assert_mattis_bardeen_superconductor_conductivity_test_case(
     test_case: MattisBardeenSuperconductorConductivityTestCase,
 ):
     gap_energy = BCSGapEnergy(test_case.gap_energy_0, test_case.kappa)
-    conductivity = MattisBardeenComplexConductivity(
+    conductivity = MattisBardeenSuperconductorConductivity(
         gap_energy, test_case.conductivity_0
     )
 

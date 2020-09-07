@@ -35,7 +35,7 @@ class BCSEtaIntegrand(IntegrandInterface):
 class BCSGapEnergy(GapEnergyInterface):
     """ Gap energy as calcuated from BCS theory
 
-    Solves the self consistent gap energy equation
+    Solves the self consistent gap energy equation :cite:`BCSTheory`
 
     .. math::
         \\frac
@@ -51,11 +51,12 @@ class BCSGapEnergy(GapEnergyInterface):
                 {\\sqrt{\\Delta^{2} + x^{2}}}
             dx
 
-    The Debye frequency is given by :math: `\\omega_D`. We also define
-    :math: \\kappa = \\frac{\\hbar \\omega_{D}}{2 T_{c} k_{B}}` as a
+    The Debye frequency is given by :math:`\\omega_D`. We also define
+    :math:`\\kappa = \\frac{\\hbar \\omega_{D}}{2 T_{c} k_{B}}` as a
 
     The original BCS assumes the weak coupling limit which corresponds to
-    :math: `\\kappa \gg 1`.
+    :math:`\\kappa \gg 1`. We do not make the assumption when calculting the
+    gap energy.
 
     """
 

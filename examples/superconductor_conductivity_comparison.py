@@ -7,7 +7,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 from super_material.conductivity import (
-    MattisBardeenComplexConductivity,
+    MattisBardeenSuperconductorConductivity,
     ZimmermannSuperconductorConductivity,
 )
 from super_material.constants import h_bar
@@ -29,7 +29,7 @@ def superconductor_conductivity_comparison_example():
     gap_energy = BCSGapEnergy(gap_energy_0, kappa)
 
     # Create superconductor conductivity objects
-    mattis_bardeen = MattisBardeenComplexConductivity(gap_energy, conductivity_0)
+    mattis_bardeen = MattisBardeenSuperconductorConductivity(gap_energy, conductivity_0)
 
     zimmerman_dirty = ZimmermannSuperconductorConductivity(
         gap_energy, conductivity_0, dirty_scattering_time
