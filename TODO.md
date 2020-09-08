@@ -18,6 +18,10 @@ The Zimmermann superconductor conductivity implementation is fully functional.  
 * Find improved integral interval transforms
 * Perform common subexpression elimination on integrand evaluations
 
+### Gap Energy
+
+* Add `BCSWeakGapEnergy` for faster weak-coupling calculations
+
 ### Documentation
 
 The public API is fully documented, but there are improvements that can be made.

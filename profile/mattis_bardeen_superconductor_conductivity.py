@@ -9,7 +9,7 @@ from super_material.conductivity import MattisBardeenSuperconductorConductivity
 
 
 def run():
-    gap_energy = BCSGapEnergy(1.5e-3, 2.3)
+    gap_energy = BCSGapEnergy(1.5e-3, 4000)
     conductivity = MattisBardeenSuperconductorConductivity(gap_energy, 2.4e7)
 
     frequencies = linspace(10e9, 1500e9, 400)

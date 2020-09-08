@@ -56,7 +56,7 @@ class BCSGapEnergy(GapEnergyInterface):
     :math:`\\eta = \\frac{1}{N(0) V}`.
 
     The original BCS assumes the weak coupling limit which corresponds to
-    :math:`\\kappa \\gg 1`. We do not make the assumption when calculting the
+    :math:`\\kappa \\gg 1`. We do not make the assumption when calculating the
     gap energy.
     """
 

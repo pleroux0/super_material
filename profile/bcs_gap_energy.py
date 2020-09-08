@@ -8,8 +8,8 @@ from super_material.gap_energy import BCSGapEnergy
 
 
 def run():
-    bcs_gap_energy = BCSGapEnergy(1.5e-3, 2.3)
-    temperatures = linspace(0, bcs_gap_energy.critical_temperature(), 1000)
+    bcs_gap_energy = BCSGapEnergy(1.5e-3, 4000)
+    temperatures = linspace(0, bcs_gap_energy.critical_temperature(), 500)
 
     with Profile() as profile:
         for temperature in temperatures:

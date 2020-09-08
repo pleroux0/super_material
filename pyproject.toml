@@ -1,8 +1,12 @@
 [tool.poetry]
 name = "super_material"
-version = "1.0.0"
+version = "1.0.0a"
 description = "Providing a constant interface to superconductor conductivity computations"
+license = "BSD-2-Clause"
 authors = ["Paul le Roux <pleroux0@outlook.com>"]
+readme = "README.md"
+repository = "https://github.com/pleroux0/super_material"
+documentation = "https://pleroux0.github.io/super_material/"
 
 [tool.poetry.dependencies]
 python = "^3.8"

@@ -9,7 +9,7 @@ sys.path.insert(0, os.path.abspath(".."))
 # Project information
 project = "super_material"
 author = "Paul le Roux <pleroux0@outlook.com>"
-release = "1.0.0"
+release = "1.0.0a"
 
 # Extentions
 extensions = [

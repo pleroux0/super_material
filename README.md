@@ -27,20 +27,21 @@ poetry install
 A simple example showing how to calculate the Mattis-Bardeen superconductor conductivity for Niobium at 4.2 K and 100 GHz.
 
 ```python
-from super_material import BCSWeakGapEnergy, MattisBardeenSuperconductorConductivity
+from super_material import BCSGapEnergy, MattisBardeenSuperconductorConductivity
 
 conductivity_0 = 2.4e7 # in Siemens per meter
 temperature = 4.2 # in K
 gap_energy_0 = 1.5e-3 # in eV
 frequency = 100e9 # in Hz
+kappa = 4000
 
-gap_energy = BCSWeakGapEnergy(gap_energy_0)
+gap_energy = BCSGapEnergy(gap_energy_0, 4000)
 conductivity = MattisBardeenSuperconductorConductivity(gap_energy, conductivity_0)
 result = conductivity.evaluate(temperature, frequency)
 print(f"sigma = {result}")
 ```
 
-For more information see [more examples](docs/examples.md) or the [API documentation](docs/api.md)
+For more information see the [full documentation](https://pleroux0.github.io/super_material/)
 
 ## Acknowledgements
 
