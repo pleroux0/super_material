@@ -13,6 +13,7 @@
   
   <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/graphviz.css" type="text/css" />
 
   
   
@@ -94,6 +95,7 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../examples/index.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../dev/index.html">Developer documentation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../bibliography.html">Bibliography</a></li>
 </ul>
 
@@ -168,11 +170,34 @@
 <h1>Zimmermann’s superconductor conductivity<a class="headerlink" href="#zimmermann-s-superconductor-conductivity" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
 <dt id="super_material.ZimmermannSuperconductorConductivity">
-<em class="property">class </em><code class="sig-name descname">ZimmermannSuperconductorConductivity</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">gap_energy</span><span class="p">:</span> <span class="n">super_material.gap_energy.GapEnergyInterface.GapEnergyInterface</span></em>, <em class="sig-param"><span class="n">conductivity_0</span><span class="p">:</span> <span class="n">float</span></em>, <em class="sig-param"><span class="n">scattering_time</span><span class="p">:</span> <span class="n">float</span></em><span class="sig-paren">)</span><a class="headerlink" href="#super_material.ZimmermannSuperconductorConductivity" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="py method">
+<em class="property">class </em><code class="sig-name descname">ZimmermannSuperconductorConductivity</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">gap_energy</span></em>, <em class="sig-param"><span class="n">conductivity_0</span></em>, <em class="sig-param"><span class="n">scattering_time</span></em><span class="sig-paren">)</span><a class="headerlink" href="#super_material.ZimmermannSuperconductorConductivity" title="Permalink to this definition">¶</a></dt>
+<dd><p>Superconductor conductivity as calculated by Zimmermann</p>
+<p>Numerically evaluates the integral expression of Zimmermann
+<a class="bibtex reference internal" href="../../bibliography.html#zimmermannsuperconductorconductivity" id="id1">[3]</a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>gap_energy</strong> (<em>super_material.gap_energy.GapEnergyInterface.GapEnergyInterface</em>) – </p></li>
+<li><p><strong>conductivity_0</strong> (<em>float</em>) – </p></li>
+<li><p><strong>scattering_time</strong> (<em>float</em>) – </p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
 <dt id="super_material.ZimmermannSuperconductorConductivity.evaluate">
-<code class="sig-name descname">evaluate</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">temperature</span><span class="p">:</span> <span class="n">float</span></em>, <em class="sig-param"><span class="n">frequency</span><span class="p">:</span> <span class="n">float</span></em><span class="sig-paren">)</span> &#x2192; complex<a class="headerlink" href="#super_material.ZimmermannSuperconductorConductivity.evaluate" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">evaluate</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">temperature</span></em>, <em class="sig-param"><span class="n">frequency</span></em><span class="sig-paren">)</span><a class="headerlink" href="#super_material.ZimmermannSuperconductorConductivity.evaluate" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculates the superconductor complex conductivity</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>temperature</strong> (<em>float</em>) – </p></li>
+<li><p><strong>frequency</strong> (<em>float</em>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>complex</p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>

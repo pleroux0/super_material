@@ -13,6 +13,7 @@
   
   <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/graphviz.css" type="text/css" />
 
   
   
@@ -94,6 +95,7 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../examples/index.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../dev/index.html">Developer documentation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../bibliography.html">Bibliography</a></li>
 </ul>
 
@@ -167,10 +169,22 @@
 <dl class="py class">
 <dt id="super_material.SuperconductorConductivityInterface">
 <em class="property">class </em><code class="sig-name descname">SuperconductorConductivityInterface</code><a class="headerlink" href="#super_material.SuperconductorConductivityInterface" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="py method">
+<dd><p>Superconductor conductivity abstract class</p>
+<dl class="py method">
 <dt id="super_material.SuperconductorConductivityInterface.evaluate">
-<em class="property">abstract </em><code class="sig-name descname">evaluate</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">temperature</span><span class="p">:</span> <span class="n">float</span></em>, <em class="sig-param"><span class="n">frequency</span><span class="p">:</span> <span class="n">float</span></em><span class="sig-paren">)</span> &#x2192; complex<a class="headerlink" href="#super_material.SuperconductorConductivityInterface.evaluate" title="Permalink to this definition">¶</a></dt>
+<em class="property">abstract </em><code class="sig-name descname">evaluate</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">temperature</span></em>, <em class="sig-param"><span class="n">frequency</span></em><span class="sig-paren">)</span><a class="headerlink" href="#super_material.SuperconductorConductivityInterface.evaluate" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculates the superconductor complex conductivity</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>temperature</strong> (<em>float</em>) – </p></li>
+<li><p><strong>frequency</strong> (<em>float</em>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>complex</p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>

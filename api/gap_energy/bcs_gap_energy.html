@@ -13,6 +13,7 @@
   
   <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/graphviz.css" type="text/css" />
 
   
   
@@ -93,6 +94,7 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../examples/index.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../dev/index.html">Developer documentation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../bibliography.html">Bibliography</a></li>
 </ul>
 
@@ -167,7 +169,7 @@
 <h1>BCSGapEnergy<a class="headerlink" href="#bcsgapenergy" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
 <dt id="super_material.BCSGapEnergy">
-<em class="property">class </em><code class="sig-name descname">BCSGapEnergy</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">gap_energy_0</span><span class="p">:</span> <span class="n">float</span></em>, <em class="sig-param"><span class="n">kappa</span><span class="p">:</span> <span class="n">float</span></em><span class="sig-paren">)</span><a class="headerlink" href="#super_material.BCSGapEnergy" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-name descname">BCSGapEnergy</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">gap_energy_0</span></em>, <em class="sig-param"><span class="n">kappa</span></em><span class="sig-paren">)</span><a class="headerlink" href="#super_material.BCSGapEnergy" title="Permalink to this definition">¶</a></dt>
 <dd><p>Gap energy as calcuated from BCS theory</p>
 <p>Solves the self consistent gap energy equation <a class="bibtex reference internal" href="../../bibliography.html#bcstheory" id="id1">[1]</a></p>
 <div class="math">
@@ -183,21 +185,43 @@
             \right)}}
         {\sqrt{\Delta^{2} + x^{2}}}
     dx"/></p>
-</div><p>The Debye frequency is given by <img class="math" src="../../_images/math/aaec537db198830e89885a57b66a2878e45a282f.png" alt="\omega_D"/>. We also define
-<img class="math" src="../../_images/math/c7a6a3f153d4212514dd0f6060cbf1d15e452fc2.png" alt="\kappa = \frac{\hbar \omega_{D}}{2 T_{c} k_{B}}"/> as a</p>
+</div><p>The Debye frequency is given by <img class="math" src="../../_images/math/aaec537db198830e89885a57b66a2878e45a282f.png" alt="\omega_D"/>. For convenience we
+define <img class="math" src="../../_images/math/c7a6a3f153d4212514dd0f6060cbf1d15e452fc2.png" alt="\kappa = \frac{\hbar \omega_{D}}{2 T_{c} k_{B}}"/> and
+<img class="math" src="../../_images/math/bc2114e50e92373f7261e92a976fe2c75e3d0b39.png" alt="\eta = \frac{1}{N(0) V}"/>.</p>
 <p>The original BCS assumes the weak coupling limit which corresponds to
 <img class="math" src="../../_images/math/8c932bb5a87b0cbc74a5f86b7a1a2e7afaf0b262.png" alt="\kappa \gg 1"/>. We do not make the assumption when calculting the
 gap energy.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>gap_energy_0</strong> (<em>float</em>) – </p></li>
+<li><p><strong>kappa</strong> (<em>float</em>) – </p></li>
+</ul>
+</dd>
+</dl>
 <dl class="py method">
 <dt id="super_material.BCSGapEnergy.critical_frequency">
-<code class="sig-name descname">critical_frequency</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">temperature</span><span class="p">:</span> <span class="n">float</span></em><span class="sig-paren">)</span> &#x2192; float<a class="headerlink" href="#super_material.BCSGapEnergy.critical_frequency" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculates the critical frequency or gap frequency</p>
+<code class="sig-name descname">critical_frequency</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">temperature</span></em><span class="sig-paren">)</span><a class="headerlink" href="#super_material.BCSGapEnergy.critical_frequency" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the critical frequency or gap frequency</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>temperature</strong> (<em>float</em>) – </p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>float</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt id="super_material.BCSGapEnergy.critical_temperature">
-<code class="sig-name descname">critical_temperature</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; float<a class="headerlink" href="#super_material.BCSGapEnergy.critical_temperature" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the critical temperature of the gap energy</p>
+<code class="sig-name descname">critical_temperature</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#super_material.BCSGapEnergy.critical_temperature" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the critical temperature or transition temperature</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -208,8 +232,16 @@ gap energy.</p>
 
 <dl class="py method">
 <dt id="super_material.BCSGapEnergy.evaluate">
-<code class="sig-name descname">evaluate</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">temperature</span><span class="p">:</span> <span class="n">float</span></em><span class="sig-paren">)</span> &#x2192; float<a class="headerlink" href="#super_material.BCSGapEnergy.evaluate" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">evaluate</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">temperature</span></em><span class="sig-paren">)</span><a class="headerlink" href="#super_material.BCSGapEnergy.evaluate" title="Permalink to this definition">¶</a></dt>
 <dd><p>Evaluate the gap energy at the specific temperature</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>temperature</strong> (<em>float</em>) – </p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>float</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
