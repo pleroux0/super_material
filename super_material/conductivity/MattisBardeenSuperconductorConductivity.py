@@ -128,6 +128,12 @@ class MattisBardeenImaginaryIntegrand(IntegrandInterface):
 
 
 class MattisBardeenSuperconductorConductivity(SuperconductorConductivityInterface):
+    """ Superconductor conductivity as calculated by Mattis and Bardeen
+
+    Numerically evaluates the integral expression of Mattis and Bardeen
+    :cite:`MattisBardeenSuperconductorConductivity`
+    """
+
     _gap_energy: GapEnergyInterface
     _conductivity_0: float
     _integrator: QuadpackIntegrator

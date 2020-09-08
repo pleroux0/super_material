@@ -51,13 +51,13 @@ class BCSGapEnergy(GapEnergyInterface):
                 {\\sqrt{\\Delta^{2} + x^{2}}}
             dx
 
-    The Debye frequency is given by :math:`\\omega_D`. We also define
-    :math:`\\kappa = \\frac{\\hbar \\omega_{D}}{2 T_{c} k_{B}}` as a
+    The Debye frequency is given by :math:`\\omega_D`. For convenience we
+    define :math:`\\kappa = \\frac{\\hbar \\omega_{D}}{2 T_{c} k_{B}}` and
+    :math:`\\eta = \\frac{1}{N(0) V}`.
 
     The original BCS assumes the weak coupling limit which corresponds to
-    :math:`\\kappa \gg 1`. We do not make the assumption when calculting the
+    :math:`\\kappa \\gg 1`. We do not make the assumption when calculting the
     gap energy.
-
     """
 
     _gap_energy_0: float  # In Electron Volt

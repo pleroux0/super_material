@@ -14,14 +14,17 @@ release = "1.0.0"
 # Extentions
 extensions = [
     "sphinx.ext.autodoc",
-    "sphinx.ext.coverage",
+    "sphinx.ext.githubpages",
     "sphinx.ext.imgmath",
+    "sphinx.ext.inheritance_diagram",
     "sphinx_rtd_theme",
     "sphinxcontrib.bibtex",
 ]
 
 # Configuration
 add_module_names = False
+autodoc_typehints = "description"
+autoclass_content = "both"
 
 # Ignore
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]

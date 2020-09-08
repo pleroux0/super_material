@@ -252,6 +252,12 @@ class ZimmermannThirdIntegral(IntegrandInterface):
 
 
 class ZimmermannSuperconductorConductivity(SuperconductorConductivityInterface):
+    """ Superconductor conductivity as calculated by Zimmermann
+
+    Numerically evaluates the integral expression of Zimmermann
+    :cite:`ZimmermannSuperconductorConductivity`
+    """
+
     _gap_energy: GapEnergyInterface
     _conductivity_0: float
     _scattering_time: float

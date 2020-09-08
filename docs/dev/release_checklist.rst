@@ -19,7 +19,7 @@ need to be performed before a release can be made.
 **Documentation**
 
 - Ensure that all titles are formatted consistently
-- Ensure that all text are checked for spelling and grammar
+- Ensure that all text is checked for spelling and grammar
 
 **Examples**
 
